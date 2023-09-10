@@ -8,7 +8,6 @@ import json
 from ydata_profiling import ProfileReport
 
 # Function to load data from different file formats
-# Function to load data from different file formats
 def load_data(file_path, file_format):
     if file_format == 'CSV':
         return pd.read_csv(file_path)
@@ -51,7 +50,7 @@ def automated_eda(data):
     correlation_matrix = data[numeric_columns].corr()
 
     # Create Streamlit columns for side-by-side display
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
 
     # Display summary statistics in the first column
     with col1:
