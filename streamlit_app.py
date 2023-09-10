@@ -34,16 +34,16 @@ def load_inbuilt_dataset(dataset_name):
 
 # Function to load inbuilt dataset
 def load_inbuilt_dataset(dataset_name):
-    if dataset_name == 'Iris':
+    dataset_name = dataset_name.lower()  # Convert to lowercase
+    if dataset_name == 'iris':
         return sns.load_dataset('iris')
-    elif dataset_name == 'Tips':
+    elif dataset_name == 'tips':
         return sns.load_dataset('tips')
-    elif dataset_name == 'Titanic':
+    elif dataset_name == 'titanic':
         return sns.load_dataset('titanic')
     # Add more dataset options as needed
     else:
         raise ValueError("Unsupported dataset.")
-
 # Function for automated EDA
 def automated_eda(data):
     # Summary statistics
