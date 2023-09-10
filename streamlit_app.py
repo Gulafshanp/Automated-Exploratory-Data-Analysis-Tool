@@ -8,6 +8,7 @@ import json
 from ydata_profiling import ProfileReport
 
 # Function to load data from different file formats
+# Function to load data from different file formats
 def load_data(file_path, file_format):
     if file_format == 'CSV':
         return pd.read_csv(file_path)
@@ -48,6 +49,22 @@ def automated_eda(data):
     # Exclude non-numeric columns from correlation matrix calculation
     numeric_columns = data.select_dtypes(include=['int64', 'float64']).columns
     correlation_matrix = data[numeric_columns].corr()
+
+    # Create Streamlit columns for side-by-side display
+    col1, col2 = st.beta_columns(2)
+
+    # Display summary statistics in the first column
+    with col1:
+        st.write("#### Summary Statistics:")
+        st.write(summary)
+
+    # Display data types and missing values in the second column
+    with col2:
+        st.write("#### Data Types:")
+        st.write(data_types)
+
+        st.write("#### Missing Values:")
+        st.write(missing_values)
 
     # Distribution plots
     for column in numeric_columns:
@@ -128,15 +145,6 @@ if 'data' in locals():
 
     st.write("### Automated EDA:")
     summary, data_types, missing_values, correlation_matrix = automated_eda(data)
-
-    st.write("#### Summary Statistics:")
-    st.write(summary)
-
-    st.write("#### Data Types:")
-    st.write(data_types)
-
-    st.write("#### Missing Values:")
-    st.write(missing_values)
 
     st.write("#### Correlation Matrix:")
     st.write(correlation_matrix)
