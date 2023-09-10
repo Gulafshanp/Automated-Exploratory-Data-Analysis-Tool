@@ -1,72 +1,116 @@
+import streamlit as st
 import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import plotly.express as px
+import json
 
-
-def perform_eda(file_path, file_format):
-    if file_format == 'csv':
-        df = pd.read_csv(file_path)
-    elif file_format == 'xls':
-        df = pd.read_excel(file_path, engine='openpyxl')
-    elif file_format == 'json':
-        df = pd.read_json(file_path)
-    elif file_format == 'tsv':
-        df = pd.read_csv(file_path, sep='\t')
+# Function to load data from different file formats
+def load_data(file_path, file_format):
+    if file_format == 'CSV':
+        return pd.read_csv(file_path)
+    elif file_format == 'XLS':
+        return pd.read_excel(file_path)
+    elif file_format == 'JSON':
+        with open(file_path, 'r') as json_file:
+            data = json.load(json_file)
+        return pd.DataFrame(data)
+    elif file_format == 'TSV':
+        return pd.read_csv(file_path, sep='\t')
     else:
-        raise ValueError("Unsupported file format. Supported formats are: csv, xls, json, tsv")
+        raise ValueError("Unsupported file format. Supported formats are CSV, XLS, JSON, and TSV.")
 
+# Function for automated EDA
+def automated_eda(data):
     # Summary statistics
-    summary = df.describe()
+    summary = data.describe()
 
     # Data types
-    data_types = df.dtypes
+    data_types = data.dtypes
 
     # Missing values
-    missing_values = df.isnull().sum()
+    missing_values = data.isnull().sum()
 
-    # Data distribution and visualizations
-    for column in df.columns:
-        if df[column].dtype in ['int64', 'float64']:
-            # Plot histograms for numerical columns using Plotly Express
-            fig = px.histogram(df, x=column, title=f'{column} Distribution')
-            fig.show()
+    # Correlation matrix
+    correlation_matrix = data.corr()
 
-            # Plot boxplots for numerical columns using Seaborn
-            sns.boxplot(data=df, y=column)
-            plt.title(f'{column} Boxplot')
-            plt.show()
+    # Distribution plots
+    for column in data.columns:
+        if data[column].dtype in ['int64', 'float64']:
+            plt.figure(figsize=(8, 6))
+            sns.histplot(data[column], kde=True)
+            plt.title(f'Distribution of {column}')
+            plt.xlabel(column)
+            plt.ylabel('Frequency')
+            st.pyplot()
 
-            # Plot distribution fitting using Seaborn
-            sns.distplot(df[column], fit=stats.norm)
-            plt.title(f'{column} Distribution Fit')
-            plt.show()
+    # Correlation heatmap
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
+    plt.title('Correlation Heatmap')
+    st.pyplot()
 
-        else:
-            # Plot count plots for categorical columns using Plotly Express
-            fig = px.bar(df, x=column, title=f'{column} Countplot')
-            fig.show()
+    # Pairwise scatter plots (for numeric columns)
+    numeric_columns = data.select_dtypes(include=['int64', 'float64']).columns
+    if len(numeric_columns) >= 2:
+        pair_plot = sns.pairplot(data=data, vars=numeric_columns)
+        pair_plot.fig.suptitle('Pairwise Scatter Plots')
+        st.pyplot()
 
-    # Pair plot for numerical columns using Seaborn
-    sns.pairplot(df, diag_kind="kde", markers="o")
-    plt.suptitle("Pair Plot")
-    plt.show()
+    # Box plots (for numeric columns)
+    for column in numeric_columns:
+        plt.figure(figsize=(8, 6))
+        sns.boxplot(x=data[column])
+        plt.title(f'Box Plot of {column}')
+        plt.xlabel(column)
+        st.pyplot()
 
-    # Correlation matrix heatmap using Seaborn
-    correlation_matrix = df.corr()
-    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', square=True)
-    plt.title('Correlation Matrix Heatmap')
-    plt.show()
+    # Count plots (for categorical columns)
+    categorical_columns = data.select_dtypes(include=['object']).columns
+    for column in categorical_columns:
+        plt.figure(figsize=(8, 6))
+        sns.countplot(data=data, x=column)
+        plt.title(f'Count Plot of {column}')
+        plt.xlabel(column)
+        plt.ylabel('Count')
+        plt.xticks(rotation=45)
+        st.pyplot()
 
-    print("\nSummary Statistics:")
-    print(summary)
-    print("\nData Types:")
-    print(data_types)
-    print("\nMissing Values:")
-    print(missing_values)
-
-if __name__ == "__main__":
-    file_path = input("Enter the path to the data file: ")
-    file_format = input("Enter the file format (csv, xls, json, tsv): ").lower()
+    # Interactive scatter plot matrix (using Plotly)
+    if len(numeric_columns) >= 2:
+        fig = px.scatter_matrix(data, dimensions=numeric_columns, title='Interactive Scatter Plot Matrix')
+        st.plotly_chart(fig)
     
-    try:
-        perform_eda(file_path, file_format)
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
+    return summary, data_types, missing_values, correlation_matrix
+
+# Streamlit App
+st.title("Automated EDA App")
+
+# Select dataset format
+file_format = st.selectbox("Select the dataset format:", ["CSV", "XLS", "JSON", "TSV"])
+
+# Upload a file
+uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
+
+if uploaded_file is not None:
+    st.write("### Uploaded Dataset Preview:")
+    data = load_data(uploaded_file, file_format)
+    st.write(data.head())
+
+    st.write("### Automated EDA:")
+    summary, data_types, missing_values, correlation_matrix = automated_eda(data)
+
+    st.write("#### Summary Statistics:")
+    st.write(summary)
+
+    st.write("#### Data Types:")
+    st.write(data_types)
+
+    st.write("#### Missing Values:")
+    st.write(missing_values)
+
+    st.write("#### Correlation Matrix:")
+    st.write(correlation_matrix)
+
+    # ... (Include other EDA visualizations as needed)
