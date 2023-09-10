@@ -2,3 +2,6 @@ streamlit
 pandas
 matplotlib
 pandas-profiling
+seaborn
+openpyxl
+plotly
