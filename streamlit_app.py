@@ -1,6 +1,7 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.express as px
+import scipy.stats as stats
 
 def perform_eda(file_path, file_format):
     if file_format == 'csv':
@@ -26,31 +27,33 @@ def perform_eda(file_path, file_format):
     # Data distribution and visualizations
     for column in df.columns:
         if df[column].dtype in ['int64', 'float64']:
-            # Plot histograms for numerical columns
-            plt.figure(figsize=(10, 4))
-            plt.subplot(1, 2, 1)
-            sns.histplot(df[column], kde=True)
-            plt.title(f'{column} Distribution')
+            # Plot histograms for numerical columns using Plotly Express
+            fig = px.histogram(df, x=column, title=f'{column} Distribution')
+            fig.show()
 
-            # Plot boxplots for numerical columns
-            plt.subplot(1, 2, 2)
+            # Plot boxplots for numerical columns using Seaborn
             sns.boxplot(data=df, y=column)
             plt.title(f'{column} Boxplot')
-            plt.tight_layout()
+            plt.show()
+
+            # Plot distribution fitting using Seaborn
+            sns.distplot(df[column], fit=stats.norm)
+            plt.title(f'{column} Distribution Fit')
             plt.show()
 
         else:
-            # Plot count plots for categorical columns
-            plt.figure(figsize=(8, 4))
-            sns.countplot(data=df, x=column)
-            plt.xticks(rotation=45)
-            plt.title(f'{column} Countplot')
-            plt.show()
+            # Plot count plots for categorical columns using Plotly Express
+            fig = px.bar(df, x=column, title=f'{column} Countplot')
+            fig.show()
 
-    # Correlation matrix heatmap
+    # Pair plot for numerical columns using Seaborn
+    sns.pairplot(df, diag_kind="kde", markers="o")
+    plt.suptitle("Pair Plot")
+    plt.show()
+
+    # Correlation matrix heatmap using Seaborn
     correlation_matrix = df.corr()
-    plt.figure(figsize=(10, 6))
-    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+    sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', square=True)
     plt.title('Correlation Matrix Heatmap')
     plt.show()
 
