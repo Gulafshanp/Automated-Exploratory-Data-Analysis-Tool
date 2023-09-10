@@ -5,6 +5,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
 import json
+from pandas_profiling import ProfileReport
 
 # Function to load data from different file formats
 def load_data(file_path, file_format):
@@ -160,6 +161,13 @@ if uploaded_file is not None:
     st.write("#### Correlation Matrix:")
     st.write(correlation_matrix)
 
+     # Button to perform EDA using Pandas Profiling
+    if st.button("Perform EDA with Pandas Profiling"):
+        # Generate the report using Pandas Profiling
+        profile = ProfileReport(data, explorative=True)
+        st.write("### Pandas Profiling Report:")
+        st_profile_report(profile)
+
 # Automated EDA for the selected dataset
 elif 'data' in locals():
     st.write("### Dataset Preview:")
@@ -176,3 +184,10 @@ elif 'data' in locals():
 
     st.write("#### Missing Values:")
     st.write(missing_values)
+
+     # Button to perform EDA using Pandas Profiling
+    if st.button("Perform EDA with Pandas Profiling"):
+        # Generate the report using Pandas Profiling
+        profile = ProfileReport(data, explorative=True)
+        st.write("### Pandas Profiling Report:")
+        st_profile_report(profile)
