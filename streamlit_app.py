@@ -126,7 +126,9 @@ else:
 
 if 'data' in locals():
     st.write("### Dataset Preview:")
-    st.write(data.head())
+    # Boolean to resize the dataframe, stored as a session state variable
+    st.checkbox("Use container width", value=False, key="use_container_width")
+    st.dataframe(data, use_container_width=st.session_state.use_container_width)
 
     st.write("### Automated EDA:")
     summary, data_types, missing_values, correlation_matrix = automated_eda(data)
@@ -142,6 +144,9 @@ if 'data' in locals():
 
     st.write("#### Correlation Matrix:")
     st.write(correlation_matrix)
+
+    
+
 
     # Button to perform EDA using Pandas Profiling
     if st.button("Perform EDA with Pandas Profiling"):
