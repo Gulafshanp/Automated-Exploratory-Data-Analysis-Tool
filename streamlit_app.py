@@ -32,6 +32,18 @@ def load_inbuilt_dataset(dataset_name):
     else:
         raise ValueError("Unsupported dataset.")
 
+# Function to load inbuilt dataset
+def load_inbuilt_dataset(dataset_name):
+    if dataset_name == 'Iris':
+        return sns.load_dataset('iris')
+    elif dataset_name == 'Tips':
+        return sns.load_dataset('tips')
+    elif dataset_name == 'Titanic':
+        return sns.load_dataset('titanic')
+    # Add more dataset options as needed
+    else:
+        raise ValueError("Unsupported dataset.")
+
 # Function for automated EDA
 def automated_eda(data):
     # Summary statistics
@@ -133,7 +145,7 @@ if uploaded_file is not None:
     st.write("#### Correlation Matrix:")
     st.write(correlation_matrix)
 
-elif 'data' in locals():
+    if 'data' in locals():
         # Automated EDA
         summary, data_types, missing_values, correlation_matrix = automated_eda(data)
 
