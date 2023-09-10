@@ -160,19 +160,19 @@ if uploaded_file is not None:
     st.write("#### Correlation Matrix:")
     st.write(correlation_matrix)
 
-    # Automated EDA for the selected dataset
-    if 'data' in locals():
-        st.write("### Dataset Preview:")
-        st.write(data.head())
-    
-        st.write("### Automated EDA:")
-        summary, data_types, missing_values, correlation_matrix = automated_eda(data)
-    
-        st.write("#### Summary Statistics:")
-        st.write(summary)
-    
-        st.write("#### Data Types:")
-        st.write(data_types)
-    
-        st.write("#### Missing Values:")
-        st.write(missing_values)
+# Automated EDA for the selected dataset
+elif 'data' in locals():
+    st.write("### Dataset Preview:")
+    st.write(data.head())
+
+    st.write("### Automated EDA:")
+    summary, data_types, missing_values, correlation_matrix = automated_eda(data)
+
+    st.write("#### Summary Statistics:")
+    st.write(summary)
+
+    st.write("#### Data Types:")
+    st.write(data_types)
+
+    st.write("#### Missing Values:")
+    st.write(missing_values)
