@@ -45,18 +45,18 @@ def automated_eda(data):
     # Missing values
     missing_values = data.isnull().sum()
 
-    # Correlation matrix
-    correlation_matrix = data.corr()
+    # Exclude non-numeric columns from correlation matrix calculation
+    numeric_columns = data.select_dtypes(include=['int64', 'float64']).columns
+    correlation_matrix = data[numeric_columns].corr()
 
     # Distribution plots
-    for column in data.columns:
-        if data[column].dtype in ['int64', 'float64']:
-            plt.figure(figsize=(8, 6))
-            sns.histplot(data[column], kde=True)
-            plt.title(f'Distribution of {column}')
-            plt.xlabel(column)
-            plt.ylabel('Frequency')
-            st.pyplot()
+    for column in numeric_columns:
+        plt.figure(figsize=(8, 6))
+        sns.histplot(data[column], kde=True)
+        plt.title(f'Distribution of {column}')
+        plt.xlabel(column)
+        plt.ylabel('Frequency')
+        st.pyplot()
 
     # Correlation heatmap
     plt.figure(figsize=(10, 8))
@@ -65,7 +65,6 @@ def automated_eda(data):
     st.pyplot()
 
     # Pairwise scatter plots (for numeric columns)
-    numeric_columns = data.select_dtypes(include=['int64', 'float64']).columns
     if len(numeric_columns) >= 2:
         pair_plot = sns.pairplot(data=data, vars=numeric_columns)
         pair_plot.fig.suptitle('Pairwise Scatter Plots')
@@ -94,7 +93,7 @@ def automated_eda(data):
     if len(numeric_columns) >= 2:
         fig = px.scatter_matrix(data, dimensions=numeric_columns, title='Interactive Scatter Plot Matrix')
         st.plotly_chart(fig)
-        
+
     # Histograms for numeric columns
     for column in numeric_columns:
         plt.figure(figsize=(8, 6))
@@ -138,6 +137,9 @@ if 'data' in locals():
 
     st.write("#### Missing Values:")
     st.write(missing_values)
+
+    st.write("#### Correlation Matrix:")
+    st.write(correlation_matrix)
 
     # Button to perform EDA using Pandas Profiling
     if st.button("Perform EDA with Pandas Profiling"):
