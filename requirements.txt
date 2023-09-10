@@ -5,3 +5,4 @@ seaborn
 matplotlib
 plotly
 ydata-profiling
+streamlit-pandas-profiling
