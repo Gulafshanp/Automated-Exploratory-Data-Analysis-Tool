@@ -20,6 +20,17 @@ def load_data(file_path, file_format):
         return pd.read_csv(file_path, sep='\t')
     else:
         raise ValueError("Unsupported file format. Supported formats are CSV, XLS, JSON, and TSV.")
+# Function to load inbuilt dataset
+def load_inbuilt_dataset(dataset_name):
+    if dataset_name == 'Iris':
+        return sns.load_dataset('iris')
+    elif dataset_name == 'Tips':
+        return sns.load_dataset('tips')
+    elif dataset_name == 'Titanic':
+        return sns.load_dataset('titanic')
+    # Add more dataset options as needed
+    else:
+        raise ValueError("Unsupported dataset.")
 
 # Function for automated EDA
 def automated_eda(data):
@@ -89,7 +100,16 @@ st.title("Automated EDA App")
 
 # Select dataset format
 file_format = st.selectbox("Select the dataset format:", ["CSV", "XLS", "JSON", "TSV"])
-
+if file_format == "Inbuilt Datasets":
+    dataset_name = st.selectbox("Select an inbuilt dataset:", ["Iris", "Tips", "Titanic"])
+    data = load_inbuilt_dataset(dataset_name)
+else:
+    uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
+    if uploaded_file is not None:
+        st.write("### Uploaded Dataset Preview:")
+        data = load_data(uploaded_file, file_format)
+        st.write(data.head())
+        
 # Upload a file
 uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
 
@@ -112,5 +132,10 @@ if uploaded_file is not None:
 
     st.write("#### Correlation Matrix:")
     st.write(correlation_matrix)
+
+elif 'data' in locals():
+        # Automated EDA
+        summary, data_types, missing_values, correlation_matrix = automated_eda(data)
+
 
     # ... (Include other EDA visualizations as needed)
