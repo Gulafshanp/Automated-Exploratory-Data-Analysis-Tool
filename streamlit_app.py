@@ -53,43 +53,43 @@ def automated_eda(data):
 
     # Distribution plots
     for column in numeric_columns:
-        plt.figure(figsize=(8, 6))
+        fig, ax = plt.subplots()
         sns.histplot(data[column], kde=True)
         plt.title(f'Distribution of {column}')
         plt.xlabel(column)
         plt.ylabel('Frequency')
-        st.pyplot()
+        st.pyplot(fig)
 
     # Correlation heatmap
-    plt.figure(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(10, 8))
     sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
     plt.title('Correlation Heatmap')
-    st.pyplot()
+    st.pyplot(fig)
 
     # Pairwise scatter plots (for numeric columns)
     if len(numeric_columns) >= 2:
         pair_plot = sns.pairplot(data=data, vars=numeric_columns)
         pair_plot.fig.suptitle('Pairwise Scatter Plots')
-        st.pyplot()
+        st.pyplot(pair_plot.fig)
 
     # Box plots (for numeric columns)
     for column in numeric_columns:
-        plt.figure(figsize=(8, 6))
+        fig, ax = plt.subplots()
         sns.boxplot(x=data[column])
         plt.title(f'Box Plot of {column}')
         plt.xlabel(column)
-        st.pyplot()
+        st.pyplot(fig)
 
     # Count plots (for categorical columns)
     categorical_columns = data.select_dtypes(include=['object']).columns
     for column in categorical_columns:
-        plt.figure(figsize=(8, 6))
+        fig, ax = plt.subplots()
         sns.countplot(data=data, x=column)
         plt.title(f'Count Plot of {column}')
         plt.xlabel(column)
         plt.ylabel('Count')
         plt.xticks(rotation=45)
-        st.pyplot()
+        st.pyplot(fig)
 
     # Interactive scatter plot matrix (using Plotly)
     if len(numeric_columns) >= 2:
@@ -98,13 +98,13 @@ def automated_eda(data):
 
     # Histograms for numeric columns
     for column in numeric_columns:
-        plt.figure(figsize=(8, 6))
+        fig, ax = plt.subplots()
         sns.histplot(data[column], kde=True)
         plt.title(f'Histogram of {column}')
         plt.xlabel(column)
         plt.ylabel('Frequency')
-        st.pyplot()
-
+        st.pyplot(fig)
+        
     return summary, data_types, missing_values, correlation_matrix
 
 # Streamlit App
