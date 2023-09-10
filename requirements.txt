@@ -4,3 +4,4 @@ pandas-profiling
 seaborn
 openpyxl
 plotly
+matplotlib
