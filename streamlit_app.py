@@ -104,6 +104,23 @@ def automated_eda(data):
     if len(numeric_columns) >= 2:
         fig = px.scatter_matrix(data, dimensions=numeric_columns, title='Interactive Scatter Plot Matrix')
         st.plotly_chart(fig)
+        
+    # Histograms for numeric columns
+    for column in data.select_dtypes(include=['int64', 'float64']).columns:
+        plt.figure(figsize=(8, 6))
+        sns.histplot(data[column], kde=True)
+        plt.title(f'Histogram of {column}')
+        plt.xlabel(column)
+        plt.ylabel('Frequency')
+        st.pyplot()
+
+    # Pair plots for numeric columns
+    numeric_columns = data.select_dtypes(include=['int64', 'float64']).columns
+    if len(numeric_columns) >= 2:
+        pair_plot = sns.pairplot(data=data, vars=numeric_columns)
+        pair_plot.fig.suptitle('Pairwise Scatter Plots')
+        st.pyplot()
+    
     
     return summary, data_types, missing_values, correlation_matrix
 
@@ -115,14 +132,10 @@ file_format = st.selectbox("Select the dataset format:", ["CSV", "XLS", "JSON", 
 if file_format == "Inbuilt Datasets":
     dataset_name = st.selectbox("Select an inbuilt dataset:", ["Iris", "Tips", "Titanic"])
     data = load_inbuilt_dataset(dataset_name)
-    st.write("### Inbuilt Dataset Preview:")
-    st.write(data)  # Display the loaded inbuilt dataset
 else:
     uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
     if uploaded_file is not None:
-        st.write("### Uploaded Dataset Preview:")
-        data = load_data(uploaded_file, file_format)
-        st.write(data.head())   
+        data = load_data(uploaded_file, file_format)   
         
 # Upload a file
 uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
@@ -147,9 +160,19 @@ if uploaded_file is not None:
     st.write("#### Correlation Matrix:")
     st.write(correlation_matrix)
 
+    # Automated EDA for the selected dataset
     if 'data' in locals():
-        # Automated EDA
+        st.write("### Dataset Preview:")
+        st.write(data.head())
+    
+        st.write("### Automated EDA:")
         summary, data_types, missing_values, correlation_matrix = automated_eda(data)
-
-
-    # ... (Include other EDA visualizations as needed)
+    
+        st.write("#### Summary Statistics:")
+        st.write(summary)
+    
+        st.write("#### Data Types:")
+        st.write(data_types)
+    
+        st.write("#### Missing Values:")
+        st.write(missing_values)
