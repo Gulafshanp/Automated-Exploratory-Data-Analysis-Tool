@@ -127,6 +127,8 @@ def automated_eda(data):
 
 # Streamlit App
 st.title("Automated EDA App")
+# Define file_format variable
+file_format = None
 
 # Select dataset format
 if file_format == "Inbuilt Datasets":
