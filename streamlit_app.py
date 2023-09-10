@@ -5,7 +5,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
 import json
-from ydata_profiling import ProfileReport
+import ydata_profiling
+from streamlit_pandas_profiling import st_profile_report
 
 # Function to load data from different file formats
 def load_data(file_path, file_format):
