@@ -49,22 +49,6 @@ def automated_eda(data):
     numeric_columns = data.select_dtypes(include=['int64', 'float64']).columns
     correlation_matrix = data[numeric_columns].corr()
 
-    # Create Streamlit columns for side-by-side display
-    col1, col2 = st.columns(2)
-
-    # Display summary statistics in the first column
-    with col1:
-        st.write("#### Summary Statistics:")
-        st.write(summary)
-
-    # Display data types and missing values in the second column
-    with col2:
-        st.write("#### Data Types:")
-        st.write(data_types)
-
-        st.write("#### Missing Values:")
-        st.write(missing_values)
-
     # Distribution plots
     for column in numeric_columns:
         plt.figure(figsize=(8, 6))
@@ -144,6 +128,15 @@ if 'data' in locals():
 
     st.write("### Automated EDA:")
     summary, data_types, missing_values, correlation_matrix = automated_eda(data)
+
+    st.write("#### Summary Statistics:")
+    st.write(summary)
+
+    st.write("#### Data Types:")
+    st.write(data_types)
+
+    st.write("#### Missing Values:")
+    st.write(missing_values)
 
     st.write("#### Correlation Matrix:")
     st.write(correlation_matrix)
