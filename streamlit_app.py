@@ -21,30 +21,19 @@ def load_data(file_path, file_format):
         return pd.read_csv(file_path, sep='\t')
     else:
         raise ValueError("Unsupported file format. Supported formats are CSV, XLS, JSON, and TSV.")
-# Function to load inbuilt dataset
-def load_inbuilt_dataset(dataset_name):
-    if dataset_name == 'Iris':
-        return sns.load_dataset('iris')
-    elif dataset_name == 'Tips':
-        return sns.load_dataset('tips')
-    elif dataset_name == 'Titanic':
-        return sns.load_dataset('titanic')
-    # Add more dataset options as needed
-    else:
-        raise ValueError("Unsupported dataset.")
 
 # Function to load inbuilt dataset
 def load_inbuilt_dataset(dataset_name):
-    dataset_name = dataset_name.lower()  # Convert to lowercase
+    dataset_name = dataset_name.lower()
     if dataset_name == 'iris':
         return sns.load_dataset('iris')
     elif dataset_name == 'tips':
         return sns.load_dataset('tips')
     elif dataset_name == 'titanic':
         return sns.load_dataset('titanic')
-    # Add more dataset options as needed
     else:
         raise ValueError("Unsupported dataset.")
+
 # Function for automated EDA
 def automated_eda(data):
     # Summary statistics
@@ -107,7 +96,7 @@ def automated_eda(data):
         st.plotly_chart(fig)
         
     # Histograms for numeric columns
-    for column in data.select_dtypes(include=['int64', 'float64']).columns:
+    for column in numeric_columns:
         plt.figure(figsize=(8, 6))
         sns.histplot(data[column], kde=True)
         plt.title(f'Histogram of {column}')
@@ -115,63 +104,26 @@ def automated_eda(data):
         plt.ylabel('Frequency')
         st.pyplot()
 
-    # Pair plots for numeric columns
-    numeric_columns = data.select_dtypes(include=['int64', 'float64']).columns
-    if len(numeric_columns) >= 2:
-        pair_plot = sns.pairplot(data=data, vars=numeric_columns)
-        pair_plot.fig.suptitle('Pairwise Scatter Plots')
-        st.pyplot()
-    
-    
     return summary, data_types, missing_values, correlation_matrix
 
 # Streamlit App
 st.title("Automated EDA App")
+
 # Define file_format variable
 file_format = None
 
 # Select dataset format
+file_format = st.selectbox("Select a dataset format:", ["CSV", "XLS", "JSON", "TSV", "Inbuilt Datasets"])
+
 if file_format == "Inbuilt Datasets":
     dataset_name = st.selectbox("Select an inbuilt dataset:", ["Iris", "Tips", "Titanic"])
     data = load_inbuilt_dataset(dataset_name)
 else:
-    # Add a unique key argument to the file_uploader widget
-    uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()], key=f"{file_format}_uploader")
+    uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
     if uploaded_file is not None:
         data = load_data(uploaded_file, file_format)
-        
-# Upload a file
-uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
 
-if uploaded_file is not None:
-    st.write("### Uploaded Dataset Preview:")
-    data = load_data(uploaded_file, file_format)
-    st.write(data.head())
-
-    st.write("### Automated EDA:")
-    summary, data_types, missing_values, correlation_matrix = automated_eda(data)
-
-    st.write("#### Summary Statistics:")
-    st.write(summary)
-
-    st.write("#### Data Types:")
-    st.write(data_types)
-
-    st.write("#### Missing Values:")
-    st.write(missing_values)
-
-    st.write("#### Correlation Matrix:")
-    st.write(correlation_matrix)
-
-     # Button to perform EDA using Pandas Profiling
-    if st.button("Perform EDA with Pandas Profiling"):
-        # Generate the report using Pandas Profiling
-        profile = ProfileReport(data, explorative=True)
-        st.write("### Pandas Profiling Report:")
-        st_profile_report(profile)
-
-# Automated EDA for the selected dataset
-elif 'data' in locals():
+if 'data' in locals():
     st.write("### Dataset Preview:")
     st.write(data.head())
 
@@ -187,7 +139,7 @@ elif 'data' in locals():
     st.write("#### Missing Values:")
     st.write(missing_values)
 
-     # Button to perform EDA using Pandas Profiling
+    # Button to perform EDA using Pandas Profiling
     if st.button("Perform EDA with Pandas Profiling"):
         # Generate the report using Pandas Profiling
         profile = ProfileReport(data, explorative=True)
