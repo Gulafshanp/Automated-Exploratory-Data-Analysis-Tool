@@ -7,6 +7,7 @@ import plotly.express as px
 import json
 import ydata_profiling
 from streamlit_pandas_profiling import st_profile_report
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Function to load data from different file formats
 def load_data(file_path, file_format):
