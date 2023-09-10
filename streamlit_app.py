@@ -129,14 +129,14 @@ def automated_eda(data):
 st.title("Automated EDA App")
 
 # Select dataset format
-file_format = st.selectbox("Select the dataset format:", ["CSV", "XLS", "JSON", "TSV", "Inbuilt Datasets"])
 if file_format == "Inbuilt Datasets":
     dataset_name = st.selectbox("Select an inbuilt dataset:", ["Iris", "Tips", "Titanic"])
     data = load_inbuilt_dataset(dataset_name)
 else:
-    uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
+    # Add a unique key argument to the file_uploader widget
+    uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()], key=f"{file_format}_uploader")
     if uploaded_file is not None:
-        data = load_data(uploaded_file, file_format)   
+        data = load_data(uploaded_file, file_format)
         
 # Upload a file
 uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
