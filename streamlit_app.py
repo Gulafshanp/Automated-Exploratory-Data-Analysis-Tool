@@ -10,11 +10,15 @@ from streamlit_pandas_profiling import st_profile_report
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Function to load data from different file formats
-def load_data(file_path, file_format):
+# Function to load data from different file formats
+def load_data(file_path, file_format, sheet_name=None):
     if file_format == 'CSV':
         return pd.read_csv(file_path)
-    elif file_format == 'XLS':
-        return pd.read_excel(file_path)
+    elif file_format == 'XLS' or file_format == 'XLSX':
+        if sheet_name is None:
+            return pd.read_excel(file_path, sheet_name=None)
+        else:
+            return pd.read_excel(file_path, sheet_name=sheet_name)
     elif file_format == 'JSON':
         with open(file_path, 'r') as json_file:
             data = json.load(json_file)
@@ -22,7 +26,7 @@ def load_data(file_path, file_format):
     elif file_format == 'TSV':
         return pd.read_csv(file_path, sep='\t')
     else:
-        raise ValueError("Unsupported file format. Supported formats are CSV, XLS, JSON, and TSV.")
+        raise ValueError("Unsupported file format. Supported formats are CSV, XLS, XLSX, JSON, and TSV.")        
 
 # Function to load inbuilt dataset
 def load_inbuilt_dataset(dataset_name):
@@ -116,14 +120,18 @@ file_format = None
 # Select dataset format
 file_format = st.selectbox("Select a dataset format:", ["CSV", "XLS", "JSON", "TSV", "Inbuilt Datasets"])
 
+
 if file_format == "Inbuilt Datasets":
     dataset_name = st.selectbox("Select an inbuilt dataset:", ["Iris", "Tips", "Titanic"])
     data = load_inbuilt_dataset(dataset_name)
 else:
     uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
     if uploaded_file is not None:
-        data = load_data(uploaded_file, file_format)
-
+        if file_format in ["XLS", "XLSX"]:
+            selected_sheet = st.selectbox("Select a sheet:", ["Sheet1"])  # Default sheet name is "Sheet1"
+            data = load_data(uploaded_file, file_format, sheet_name=selected_sheet)
+        else:
+            data = load_data(uploaded_file, file_format)
 if 'data' in locals():
     st.write("### Dataset Preview:")
     # Boolean to resize the dataframe, stored as a session state variable
