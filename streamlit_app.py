@@ -10,24 +10,28 @@ from streamlit_pandas_profiling import st_profile_report
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Function to load data from different file formats
-# Function to load data from different file formats
 def load_data(file_path, file_format, sheet_name=None):
-    if file_format == 'CSV':
-        return pd.read_csv(file_path)
-    elif file_format == 'XLS' or file_format == 'XLSX':
-        if sheet_name is None:
-            return pd.read_excel(file_path, sheet_name=None)
+    try:
+        if file_format == 'CSV':
+            return pd.read_csv(file_path)
+        elif file_format in ['XLS', 'XLSX']:
+            if sheet_name is None:
+                # Detect sheet names without reading the data
+                with openpyxl.open(file_path, read_only=True) as workbook:
+                    sheet_names = workbook.sheetnames
+                return sheet_names
+            else:
+                return pd.read_excel(file_path, sheet_name=sheet_name)
+        elif file_format == 'JSON':
+            with open(file_path, 'r') as json_file:
+                data = json.load(json_file)
+            return pd.DataFrame(data)
+        elif file_format == 'TSV':
+            return pd.read_csv(file_path, sep='\t')
         else:
-            return pd.read_excel(file_path, sheet_name=sheet_name)
-    elif file_format == 'JSON':
-        with open(file_path, 'r') as json_file:
-            data = json.load(json_file)
-        return pd.DataFrame(data)
-    elif file_format == 'TSV':
-        return pd.read_csv(file_path, sep='\t')
-    else:
-        raise ValueError("Unsupported file format. Supported formats are CSV, XLS, XLSX, JSON, and TSV.")        
-
+            raise ValueError("Unsupported file format. Supported formats are CSV, XLS, XLSX, JSON, and TSV.")
+    except ValueError as e:
+        return None  # Return None
 # Function to load inbuilt dataset
 def load_inbuilt_dataset(dataset_name):
     dataset_name = dataset_name.lower()
