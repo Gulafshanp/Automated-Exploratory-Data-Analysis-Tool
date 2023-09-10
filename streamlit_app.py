@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 import json
 import ydata_profiling
+from openpyxl import load_workbook
 from streamlit_pandas_profiling import st_profile_report
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -127,15 +128,16 @@ file_format = st.selectbox("Select a dataset format:", ["CSV", "XLS", "JSON", "T
 
 if file_format == "Inbuilt Datasets":
     dataset_name = st.selectbox("Select an inbuilt dataset:", ["Iris", "Tips", "Titanic"])
-    data = load_inbuilt_dataset(dataset_name)
+    data = sns.load_dataset(dataset_name)
 else:
     uploaded_file = st.file_uploader(f"Upload a {file_format} file", type=[file_format.lower()])
     if uploaded_file is not None:
+        sheet_name = None
         if file_format in ["XLS", "XLSX"]:
-            selected_sheet = st.selectbox("Select a sheet:", ["Sheet1"])  # Default sheet name is "Sheet1"
-            data = load_data(uploaded_file, file_format, sheet_name=selected_sheet)
-        else:
-            data = load_data(uploaded_file, file_format)
+            # Allow users to select a sheet from Excel files
+            sheet_name = st.selectbox("Select a sheet (optional):", [""] + load_data(uploaded_file, file_format))
+        data = load_data(uploaded_file, file_format, sheet_name=sheet_name)
+
 if 'data' in locals():
     st.write("### Dataset Preview:")
     # Boolean to resize the dataframe, stored as a session state variable
