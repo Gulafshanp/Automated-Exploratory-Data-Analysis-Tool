@@ -1,7 +1,5 @@
 import pandas as pd
-import seaborn as sns
-import plotly.express as px
-import scipy.stats as stats
+
 
 def perform_eda(file_path, file_format):
     if file_format == 'csv':
