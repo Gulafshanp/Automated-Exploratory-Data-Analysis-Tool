@@ -154,11 +154,19 @@ if 'data' in locals():
     st.write(correlation_matrix)
 
     
-
-
+    df_info = ['Automated EDA']
+    sdbar = st.multiselect("EDA Options: ", df_info)
     # Button to perform EDA using Pandas Profiling
-    if st.button("Perform EDA with Pandas Profiling"):
-        # Generate the report using Pandas Profiling
-        profile = ProfileReport(data, explorative=True)
-        st.write("### Pandas Profiling Report:")
-        st_profile_report(profile)
+    if 'Automated EDA' in sdbar:
+        datf = df
+        st.write("Please Wait for Few Seconds.....")
+
+        pr = df.profile_report(dark_mode=True)
+
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+        chart = st.line_chart(np.random.randn(10, 2))
+
+
+        st_profile_report(pr)
+        st.balloons()
